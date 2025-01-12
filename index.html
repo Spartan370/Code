@@ -7,8 +7,14 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <div class="loading-screen">
+        <div class="loader"></div>
+        <div class="loader-text">CodeVault Elite</div>
+    </div>
+
     <nav class="navbar">
         <div class="nav-brand">
             <img src="logo.png" alt="CodeVault Elite" class="logo">
@@ -22,19 +28,56 @@
             <div class="dropdown">
                 <button class="dropbtn glow-effect">Languages</button>
                 <div class="dropdown-content">
-                    <a href="#">Rust</a>
-                    <a href="#">C++</a>
-                    <a href="#">JavaScript</a>
-                    <a href="#">Python</a>
-                    <a href="#">Lua</a>
+                    <a href="#rust">Rust</a>
+                    <a href="#cpp">C++</a>
+                    <a href="#javascript">JavaScript</a>
+                    <a href="#python">Python</a>
+                    <a href="#lua">Lua</a>
+                    <a href="#golang">Golang</a>
+                    <a href="#java">Java</a>
+                    <a href="#csharp">C#</a>
                 </div>
             </div>
         </div>
         <div class="nav-auth">
-            <button class="btn-login glow-effect">Login</button>
-            <button class="btn-signup pulse-effect">Sign Up</button>
+            <button class="btn-login glow-effect" id="loginBtn">Login</button>
+            <button class="btn-signup pulse-effect" id="signupBtn">Sign Up</button>
+            <div class="user-profile hidden">
+                <img src="avatar.png" alt="User Avatar" class="avatar">
+                <div class="user-menu">
+                    <a href="#profile">My Profile</a>
+                    <a href="#purchases">My Purchases</a>
+                    <a href="#listings">My Listings</a>
+                    <a href="#settings">Settings</a>
+                    <a href="#logout" class="logout">Logout</a>
+                </div>
+            </div>
         </div>
     </nav>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Login to CodeVault Elite</h2>
+            <form class="login-form">
+                <div class="form-group">
+                    <input type="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn-submit glow-effect">Login</button>
+                <div class="social-login">
+                    <button type="button" class="btn-github">
+                        <i class="fab fa-github"></i> Continue with GitHub
+                    </button>
+                    <button type="button" class="btn-google">
+                        <i class="fab fa-google"></i> Continue with Google
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <header class="hero">
         <div class="hero-content">
@@ -42,7 +85,16 @@
             <p class="hero-subtitle">Discover, Buy, and Sell High-Quality Source Code</p>
             <div class="search-container">
                 <input type="text" placeholder="Search for code..." class="search-input">
-                <button class="search-btn glow-effect">Search</button>
+                <button class="search-btn glow-effect">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+            <div class="trending-tags">
+                <span class="tag">Machine Learning</span>
+                <span class="tag">Web3</span>
+                <span class="tag">API</span>
+                <span class="tag">Blockchain</span>
+                <span class="tag">Game Dev</span>
             </div>
         </div>
         <div class="hero-background"></div>
@@ -52,21 +104,30 @@
         <section id="featured" class="featured-section">
             <h2 class="section-title">Featured Products</h2>
             <div class="product-grid">
-                <div class="product-card">
+                <div class="product-card premium">
+                    <div class="product-badge">Premium</div>
                     <div class="product-image">
                         <img src="product1.png" alt="Product">
                     </div>
                     <div class="product-info">
-                        <h3>Advanced Neural Network</h3>
+                        <h3>Advanced Neural Network Framework</h3>
+                        <p class="description">Complete deep learning framework with GPU acceleration</p>
+                        <div class="stats">
+                            <span><i class="fas fa-download"></i> 1.2k</span>
+                            <span><i class="fas fa-star"></i> 4.9</span>
+                            <span><i class="fas fa-code-branch"></i> 234</span>
+                        </div>
                         <p class="price">$299.99</p>
                         <div class="tags">
                             <span>Python</span>
                             <span>AI</span>
                             <span>ML</span>
+                            <span>CUDA</span>
                         </div>
-                        <button class="btn-buy glow-effect">Purchase</button>
+                        <button class="btn-buy glow-effect">Purchase Now</button>
                     </div>
                 </div>
+                <!-- More product cards... -->
             </div>
         </section>
 
@@ -78,8 +139,54 @@
                         <i class="fas fa-robot"></i>
                     </div>
                     <h3>AI & Machine Learning</h3>
-                    <p>Cutting-edge algorithms</p>
+                    <p>Cutting-edge algorithms and models</p>
+                    <span class="item-count">1,234 items</span>
                 </div>
+                <!-- More category cards... -->
+            </div>
+        </section>
+
+        <section id="how-it-works" class="how-it-works-section">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-container">
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Browse</h3>
+                    <p>Explore our vast collection of premium code</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Select</h3>
+                    <p>Choose the perfect solution for your needs</p>
+                </div>
+                <div class="step">
+                    <div class="step-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Download</h3>
+                    <p>Get instant access to your purchased code</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonials" class="testimonials-section">
+            <h2 class="section-title">What Developers Say</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-avatar">
+                        <img src="avatar1.png" alt="Developer">
+                    </div>
+                    <p class="testimonial-text">"The quality of code on CodeVault Elite is outstanding. Saved weeks of development time!"</p>
+                    <div class="testimonial-author">
+                        <h4>John Doe</h4>
+                        <span>Senior Developer at TechCorp</span>
+                    </div>
+                </div>
+                <!-- More testimonials... -->
             </div>
         </section>
     </main>
@@ -89,6 +196,12 @@
             <div class="footer-section">
                 <h3>CodeVault Elite</h3>
                 <p>Your premium source for quality code</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                </div>
             </div>
             <div class="footer-section">
                 <h3>Quick Links</h3>
@@ -97,13 +210,36 @@
                     <li><a href="#">Terms of Service</a></li>
                     <li><a href="#">Privacy Policy</a></li>
                     <li><a href="#">Contact</a></li>
+                    <li><a href="#">Blog</a></li>
                 </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Categories</h3>
+                <ul>
+                    <li><a href="#">Web Development</a></li>
+                    <li><a href="#">Mobile Apps</a></li>
+                    <li><a href="#">Game Development</a></li>
+                    <li><a href="#">Machine Learning</a></li>
+                    <li><a href="#">Blockchain</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Newsletter</h3>
+                <p>Stay updated with our latest releases</p>
+                <form class="newsletter-form">
+                    <input type="email" placeholder="Enter your email">
+                    <button type="submit" class="btn-subscribe glow-effect">Subscribe</button>
+                </form>
             </div>
         </div>
         <div class="footer-bottom">
             <p>&copy; 2024 CodeVault Elite. All rights reserved.</p>
         </div>
     </footer>
+
+    <div class="scroll-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </div>
 
     <script src="script.js"></script>
 </body>
