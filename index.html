@@ -3,244 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeVault Elite - Premium Source Code Marketplace</title>
+    <title>CodeVault Elite - Premium Code Marketplace</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="loading-screen">
         <div class="loader"></div>
-        <div class="loader-text">CodeVault Elite</div>
+        <h2>Loading CodeVault Elite</h2>
     </div>
 
     <nav class="navbar">
         <div class="nav-brand">
-            <img src="logo.png" alt="CodeVault Elite" class="logo">
+            <img src="assets/logo.svg" alt="CodeVault Elite Logo" class="logo">
             <span class="brand-text">CodeVault Elite</span>
         </div>
+        
         <div class="nav-links">
-            <a href="#" class="nav-link glow-effect">Home</a>
-            <a href="#marketplace" class="nav-link glow-effect">Marketplace</a>
-            <a href="#categories" class="nav-link glow-effect">Categories</a>
-            <a href="#trending" class="nav-link glow-effect">Trending</a>
+            <a href="#home" class="nav-link">Home</a>
             <div class="dropdown">
-                <button class="dropbtn glow-effect">Languages</button>
+                <button class="dropbtn">Categories</button>
                 <div class="dropdown-content">
-                    <a href="#rust">Rust</a>
-                    <a href="#cpp">C++</a>
-                    <a href="#javascript">JavaScript</a>
-                    <a href="#python">Python</a>
-                    <a href="#lua">Lua</a>
-                    <a href="#golang">Golang</a>
-                    <a href="#java">Java</a>
-                    <a href="#csharp">C#</a>
+                    <a href="#web">Web Development</a>
+                    <a href="#mobile">Mobile Apps</a>
+                    <a href="#game">Game Development</a>
+                    <a href="#ai">AI/ML</a>
                 </div>
             </div>
-        </div>
-        <div class="nav-auth">
-            <button class="btn-login glow-effect" id="loginBtn">Login</button>
-            <button class="btn-signup pulse-effect" id="signupBtn">Sign Up</button>
-            <div class="user-profile hidden">
-                <img src="avatar.png" alt="User Avatar" class="avatar">
-                <div class="user-menu">
-                    <a href="#profile">My Profile</a>
-                    <a href="#purchases">My Purchases</a>
-                    <a href="#listings">My Listings</a>
-                    <a href="#settings">Settings</a>
-                    <a href="#logout" class="logout">Logout</a>
-                </div>
+            <a href="#marketplace" class="nav-link">Marketplace</a>
+            <div class="user-section" id="userSection">
             </div>
         </div>
     </nav>
 
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">Elite Code Marketplace</h1>
+            <p class="hero-subtitle">Discover, Buy, and Sell Premium Code Solutions</p>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search for code solutions...">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <section class="featured-products">
+        <h2>Featured Solutions</h2>
+        <div class="product-grid" id="featuredProducts">
+        </div>
+    </section>
+
+    <section class="categories">
+        <h2>Browse Categories</h2>
+        <div class="category-grid">
+            <div class="category-card">
+                <i class="fas fa-globe"></i>
+                <h3>Web Development</h3>
+                <p>Frontend & Backend Solutions</p>
+            </div>
+            <div class="category-card">
+                <i class="fas fa-mobile-alt"></i>
+                <h3>Mobile Apps</h3>
+                <p>iOS & Android Development</p>
+            </div>
+            <div class="category-card">
+                <i class="fas fa-gamepad"></i>
+                <h3>Game Development</h3>
+                <p>Unity & Unreal Engine</p>
+            </div>
+            <div class="category-card">
+                <i class="fas fa-brain"></i>
+                <h3>AI/ML</h3>
+                <p>Machine Learning Models</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard hidden" id="dashboard">
+        <div class="dashboard-header">
+            <h2>My Dashboard</h2>
+            <div class="dashboard-stats">
+            </div>
+        </div>
+        <div class="dashboard-content">
+            <div class="my-products">
+                <h3>My Products</h3>
+                <div class="product-grid" id="userProducts"></div>
+            </div>
+            <div class="my-purchases">
+                <h3>My Purchases</h3>
+                <div class="product-grid" id="userPurchases"></div>
+            </div>
+        </div>
+    </section>
+
     <div class="modal" id="loginModal">
         <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Login to CodeVault Elite</h2>
-            <form class="login-form">
-                <div class="form-group">
-                    <input type="email" placeholder="Email" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="btn-submit glow-effect">Login</button>
-                <div class="social-login">
-                    <button type="button" class="btn-github">
-                        <i class="fab fa-github"></i> Continue with GitHub
-                    </button>
-                    <button type="button" class="btn-google">
-                        <i class="fab fa-google"></i> Continue with Google
-                    </button>
-                </div>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <span class="switch-modal" data-modal="registerModal">Register</span></p>
+        </div>
+    </div>
+
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <h2>Register</h2>
+            <form id="registerForm">
+                <input type="text" placeholder="Username" required>
+                <input type="email" placeholder="Email" required>
+                <input type="password" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+            <p>Already have an account? <span class="switch-modal" data-modal="loginModal">Login</span></p>
+        </div>
+    </div>
+
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <h2>Upload Code Solution</h2>
+            <form id="uploadForm">
+                <input type="text" placeholder="Title" required>
+                <textarea placeholder="Description" required></textarea>
+                <input type="number" placeholder="Price" required>
+                <select required>
+                    <option value="">Select Category</option>
+                    <option value="web">Web Development</option>
+                    <option value="mobile">Mobile Apps</option>
+                    <option value="game">Game Development</option>
+                    <option value="ai">AI/ML</option>
+                </select>
+                <input type="file" accept=".zip,.rar,.7zip" required>
+                <button type="submit">Upload</button>
             </form>
         </div>
     </div>
 
-    <header class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">Premium Source Code Marketplace</h1>
-            <p class="hero-subtitle">Discover, Buy, and Sell High-Quality Source Code</p>
-            <div class="search-container">
-                <input type="text" placeholder="Search for code..." class="search-input">
-                <button class="search-btn glow-effect">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </div>
-            <div class="trending-tags">
-                <span class="tag">Machine Learning</span>
-                <span class="tag">Web3</span>
-                <span class="tag">API</span>
-                <span class="tag">Blockchain</span>
-                <span class="tag">Game Dev</span>
-            </div>
-        </div>
-        <div class="hero-background"></div>
-    </header>
-
-    <main>
-        <section id="featured" class="featured-section">
-            <h2 class="section-title">Featured Products</h2>
-            <div class="product-grid">
-                <div class="product-card premium">
-                    <div class="product-badge">Premium</div>
-                    <div class="product-image">
-                        <img src="product1.png" alt="Product">
-                    </div>
-                    <div class="product-info">
-                        <h3>Advanced Neural Network Framework</h3>
-                        <p class="description">Complete deep learning framework with GPU acceleration</p>
-                        <div class="stats">
-                            <span><i class="fas fa-download"></i> 1.2k</span>
-                            <span><i class="fas fa-star"></i> 4.9</span>
-                            <span><i class="fas fa-code-branch"></i> 234</span>
-                        </div>
-                        <p class="price">$299.99</p>
-                        <div class="tags">
-                            <span>Python</span>
-                            <span>AI</span>
-                            <span>ML</span>
-                            <span>CUDA</span>
-                        </div>
-                        <button class="btn-buy glow-effect">Purchase Now</button>
-                    </div>
-                </div>
-                <!-- More product cards... -->
-            </div>
-        </section>
-
-        <section id="categories" class="categories-section">
-            <h2 class="section-title">Browse Categories</h2>
-            <div class="category-grid">
-                <div class="category-card">
-                    <div class="category-icon">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <h3>AI & Machine Learning</h3>
-                    <p>Cutting-edge algorithms and models</p>
-                    <span class="item-count">1,234 items</span>
-                </div>
-                <!-- More category cards... -->
-            </div>
-        </section>
-
-        <section id="how-it-works" class="how-it-works-section">
-            <h2 class="section-title">How It Works</h2>
-            <div class="steps-container">
-                <div class="step">
-                    <div class="step-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h3>Browse</h3>
-                    <p>Explore our vast collection of premium code</p>
-                </div>
-                <div class="step">
-                    <div class="step-icon">
-                        <i class="fas fa-code"></i>
-                    </div>
-                    <h3>Select</h3>
-                    <p>Choose the perfect solution for your needs</p>
-                </div>
-                <div class="step">
-                    <div class="step-icon">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <h3>Download</h3>
-                    <p>Get instant access to your purchased code</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="testimonials" class="testimonials-section">
-            <h2 class="section-title">What Developers Say</h2>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-avatar">
-                        <img src="avatar1.png" alt="Developer">
-                    </div>
-                    <p class="testimonial-text">"The quality of code on CodeVault Elite is outstanding. Saved weeks of development time!"</p>
-                    <div class="testimonial-author">
-                        <h4>John Doe</h4>
-                        <span>Senior Developer at TechCorp</span>
-                    </div>
-                </div>
-                <!-- More testimonials... -->
-            </div>
-        </section>
-    </main>
-
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
-                <h3>CodeVault Elite</h3>
-                <p>Your premium source for quality code</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fab fa-discord"></i></a>
-                </div>
+                <h3>About CodeVault Elite</h3>
+                <p>Premium marketplace for developers to buy and sell high-quality code solutions.</p>
             </div>
             <div class="footer-section">
                 <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Terms of Service</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="#">Blog</a></li>
-                </ul>
+                <a href="#marketplace">Marketplace</a>
+                <a href="#categories">Categories</a>
+                <a href="#about">About Us</a>
             </div>
             <div class="footer-section">
-                <h3>Categories</h3>
-                <ul>
-                    <li><a href="#">Web Development</a></li>
-                    <li><a href="#">Mobile Apps</a></li>
-                    <li><a href="#">Game Development</a></li>
-                    <li><a href="#">Machine Learning</a></li>
-                    <li><a href="#">Blockchain</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Newsletter</h3>
-                <p>Stay updated with our latest releases</p>
-                <form class="newsletter-form">
-                    <input type="email" placeholder="Enter your email">
-                    <button type="submit" class="btn-subscribe glow-effect">Subscribe</button>
-                </form>
+                <h3>Connect With Us</h3>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2024 CodeVault Elite. All rights reserved.</p>
+            <p>&copy; 2025 CodeVault Elite. All rights reserved.</p>
         </div>
     </footer>
 
-    <div class="scroll-to-top">
+    <button class="scroll-to-top">
         <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <div class="tint-control">
+        <label>Background Tint</label>
+        <input type="range" min="0" max="1" step="0.1" value="0.7">
     </div>
 
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
