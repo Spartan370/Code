@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { register, login, getMe, updateProfile } = require('/codevault-elite/src/controllers/authController');
-const auth = require('/codevault-elite/src/middleware/auth');
+const { register, login, getMe, updateProfile } = require('/app/src/controllers/authController');
+const auth = require('/app/src/middleware/auth');
 
 router.post('/register', register);
 router.post('/login', login);
