@@ -1,222 +1,177 @@
 document.addEventListener('DOMContentLoaded', () => {
     const root = document.documentElement;
+    const navbar = document.querySelector('.navbar');
+    const searchInput = document.querySelector('.search-input');
+    const productGrid = document.querySelector('.product-grid');
+    const modals = document.querySelectorAll('.modal');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const uploadForm = document.getElementById('uploadForm');
+    const userSection = document.getElementById('userSection');
+    const dashboard = document.getElementById('dashboard');
+    const tintControl = document.querySelector('.tint-control input');
+    const scrollTopBtn = document.querySelector('.scroll-to-top');
     let lastScrollTop = 0;
-    let isModalOpen = false;
+    let page = 1;
+    let loading = false;
 
-    initializeLoading();
-    initializeNavigation();
-    initializeParticles();
-    initializeProductCards();
-    initializeModals();
-    initializeSearch();
-    initializeAnimations();
-    initializeTintControl();
-    initializeInfiniteScroll();
-    initializeUserSystem();
+    function initializeApp() {
+        setupEventListeners();
+        checkAuthStatus();
+        loadInitialProducts();
+        initializeParticles();
+        setupInfiniteScroll();
+        loadSavedPreferences();
+    }
 
-    function initializeLoading() {
-        const loadingScreen = document.querySelector('.loading-screen');
-        window.addEventListener('load', () => {
-            loadingScreen.style.opacity = '0';
-            setTimeout(() => {
-                loadingScreen.style.display = 'none';
-            }, 500);
+    function setupEventListeners() {
+        window.addEventListener('scroll', handleScroll);
+        searchInput.addEventListener('input', debounce(handleSearch, 300));
+        loginForm.addEventListener('submit', handleLogin);
+        registerForm.addEventListener('submit', handleRegister);
+        uploadForm.addEventListener('submit', handleUpload);
+        tintControl.addEventListener('input', handleTintChange);
+        scrollTopBtn.addEventListener('click', scrollToTop);
+        document.querySelectorAll('.switch-modal').forEach(btn => {
+            btn.addEventListener('click', switchModal);
         });
     }
 
-    function initializeNavigation() {
-        const navbar = document.querySelector('.navbar');
-        const scrollTopBtn = document.querySelector('.scroll-to-top');
+    async function handleLogin(e) {
+        e.preventDefault();
+        const formData = new FormData(loginForm);
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                body: JSON.stringify(Object.fromEntries(formData)),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                updateUIForLoggedInUser(data.user);
+                closeModal('loginModal');
+            }
+        } catch (error) {
+            showError(error.message);
+        }
+    }
 
+    async function handleRegister(e) {
+        e.preventDefault();
+        const formData = new FormData(registerForm);
+        try {
+            const response = await fetch('/api/auth/register', {
+                method: 'POST',
+                body: JSON.stringify(Object.fromEntries(formData)),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                updateUIForLoggedInUser(data.user);
+                closeModal('registerModal');
+            }
+        } catch (error) {
+            showError(error.message);
+        }
+    }
+
+    async function handleUpload(e) {
+        e.preventDefault();
+        const formData = new FormData(uploadForm);
+        try {
+            const response = await fetch('/api/products', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            if (response.ok) {
+                closeModal('uploadModal');
+                loadInitialProducts();
+            }
+        } catch (error) {
+            showError(error.message);
+        }
+    }
+
+    async function loadInitialProducts() {
+        try {
+            const response = await fetch('/api/products');
+            const data = await response.json();
+            renderProducts(data.products);
+        } catch (error) {
+            showError(error.message);
+        }
+    }
+
+    function renderProducts(products) {
+        productGrid.innerHTML = products.map(product => `
+            <div class="product-card" data-id="${product._id}">
+                <div class="product-image">
+                    <img src="${product.image}" alt="${product.title}">
+                </div>
+                <div class="product-info">
+                    <h3>${product.title}</h3>
+                    <p>${product.description}</p>
+                    <div class="product-meta">
+                        <span class="price">$${product.price}</span>
+                        <span class="rating">${product.rating} ⭐</span>
+                    </div>
+                    <button class="btn-buy">Purchase</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateUIForLoggedInUser(user) {
+        userSection.innerHTML = `
+            <div class="user-profile">
+                <img src="${user.avatar}" alt="Profile">
+                <span>${user.username}</span>
+                <button id="logoutBtn">Logout</button>
+            </div>
+        `;
+        dashboard.classList.remove('hidden');
+    }
+
+    function handleScroll() {
+        const currentScroll = window.pageYOffset;
+        navbar.classList.toggle('navbar-scrolled', currentScroll > 100);
+        scrollTopBtn.classList.toggle('visible', currentScroll > 500);
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+    }
+
+    function setupInfiniteScroll() {
         window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            
-            if (currentScroll > 100) {
-                navbar.classList.add('navbar-scrolled');
-                scrollTopBtn.classList.add('visible');
-            } else {
-                navbar.classList.remove('navbar-scrolled');
-                scrollTopBtn.classList.remove('visible');
+            if (loading) return;
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                loadMoreProducts();
             }
-
-            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-        });
-
-        scrollTopBtn.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
         });
     }
 
-    function initializeParticles() {
-        const canvas = document.createElement('canvas');
-        canvas.classList.add('particles-canvas');
-        document.body.appendChild(canvas);
-        
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        const particles = [];
-        const particleCount = 100;
-        
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 3;
-                this.speedX = Math.random() * 3 - 1.5;
-                this.speedY = Math.random() * 3 - 1.5;
-                this.color = `rgba(128, 0, 0, ${Math.random() * 0.5})`;
-            }
-            
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                
-                if (this.x > canvas.width) this.x = 0;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.y > canvas.height) this.y = 0;
-                if (this.y < 0) this.y = canvas.height;
-            }
-            
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-        
-        function initParticles() {
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new Particle());
-            }
-        }
-        
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            for (const particle of particles) {
-                particle.update();
-                particle.draw();
-            }
-            
-            requestAnimationFrame(animateParticles);
-        }
-        
-        initParticles();
-        animateParticles();
-        
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-    }
-
-    function initializeProductCards() {
-        const productCards = document.querySelectorAll('.product-card');
-        
-        productCards.forEach(card => {
-            card.addEventListener('mouseenter', (e) => {
-                const bounds = card.getBoundingClientRect();
-                const mouseX = e.clientX - bounds.left;
-                const mouseY = e.clientY - bounds.top;
-                
-                card.style.transform = `
-                    perspective(1000px)
-                    rotateX(${(mouseY - bounds.height/2) / 20}deg)
-                    rotateY(${(mouseX - bounds.width/2) / 20}deg)
-                    translateZ(20px)
-                `;
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateZ(0)';
-            });
-            
-            const buyBtn = card.querySelector('.btn-buy');
-            buyBtn.addEventListener('click', () => {
-                if (!isAuthenticated()) {
-                    showLoginModal();
-                    return;
-                }
-                initiateCheckout(card.dataset.productId);
-            });
-        });
-    }
-
-    function initializeModals() {
-        const modals = document.querySelectorAll('.modal');
-        const modalTriggers = document.querySelectorAll('[data-modal-target]');
-        
-        modalTriggers.forEach(trigger => {
-            trigger.addEventListener('click', () => {
-                const modalId = trigger.dataset.modalTarget;
-                const modal = document.querySelector(modalId);
-                openModal(modal);
-            });
-        });
-        
-        modals.forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal(modal);
-            });
-        });
-    }
-
-    function initializeSearch() {
-        const searchInput = document.querySelector('.search-input');
-        let searchTimeout;
-        
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                performSearch(e.target.value);
-            }, 300);
-        });
-        
-        async function performSearch(query) {
-            try {
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-                const results = await response.json();
-                updateSearchResults(results);
-            } catch (error) {
-                console.error('Search failed:', error);
-            }
+    async function loadMoreProducts() {
+        loading = true;
+        try {
+            const response = await fetch(`/api/products?page=${++page}`);
+            const data = await response.json();
+            renderProducts([...document.querySelectorAll('.product-card'), ...data.products]);
+        } catch (error) {
+            showError(error.message);
+        } finally {
+            loading = false;
         }
     }
 
-    function initializeAnimations() {
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('animate-in');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-        
-        document.querySelectorAll('.animate-on-scroll').forEach(el => {
-            observer.observe(el);
-        });
+    function handleTintChange(e) {
+        root.style.setProperty('--tint-opacity', e.target.value);
+        localStorage.setItem('tintPreference', e.target.value);
     }
 
-    function initializeTintControl() {
-        const tintControl = document.querySelector('.tint-control input');
-        
-        tintControl.addEventListener('input', (e) => {
-            root.style.setProperty('--tint-opacity', e.target.value);
-            localStorage.setItem('tintPreference', e.target.value);
-        });
-        
+    function loadSavedPreferences() {
         const savedTint = localStorage.getItem('tintPreference');
         if (savedTint) {
             tintControl.value = savedTint;
@@ -224,78 +179,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function initializeInfiniteScroll() {
-        let page = 1;
-        let loading = false;
-        
-        window.addEventListener('scroll', () => {
-            if (loading) return;
-            
-            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
-                loading = true;
-                loadMoreProducts();
-            }
-        });
-        
-        async function loadMoreProducts() {
-            try {
-                const response = await fetch(`/api/products?page=${++page}`);
-                const newProducts = await response.json();
-                appendProducts(newProducts);
-                loading = false;
-            } catch (error) {
-                console.error('Failed to load more products:', error);
-                loading = false;
-            }
-        }
-    }
-
-    function initializeUserSystem() {
-        const loginForm = document.querySelector('.login-form');
-        const signupForm = document.querySelector('.signup-form');
-        
-        loginForm?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(loginForm);
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    body: formData
-                });
-                if (response.ok) {
-                    const userData = await response.json();
-                    handleSuccessfulLogin(userData);
-                }
-            } catch (error) {
-                showError('Login failed. Please try again.');
-            }
-        });
-    }
-
-    function handleSuccessfulLogin(userData) {
-        localStorage.setItem('user', JSON.stringify(userData));
-        updateUIForLoggedInUser(userData);
-        closeModal(document.querySelector('#loginModal'));
-    }
-
-    function updateUIForLoggedInUser(userData) {
-        const authSection = document.querySelector('.nav-auth');
-        authSection.innerHTML = `
-            <div class="user-profile">
-                <img src="${userData.avatar}" alt="Profile">
-                <span>${userData.username}</span>
-            </div>
-        `;
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
     }
 
     function showError(message) {
-        const errorToast = document.createElement('div');
-        errorToast.classList.add('error-toast');
-        errorToast.textContent = message;
-        document.body.appendChild(errorToast);
-        
-        setTimeout(() => {
-            errorToast.remove();
-        }, 3000);
+        const toast = document.createElement('div');
+        toast.className = 'toast error';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
     }
+
+    initializeApp();
 });
